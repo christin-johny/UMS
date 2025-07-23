@@ -3,11 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 
-
-// @desc    Register a new user
 exports.registerUser = async (req, res) => {
   const { username, email, password } = req.body;
-
+  
   try {
     const userExists = await User.findOne({ email });
     
@@ -22,7 +20,6 @@ exports.registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    
     const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
@@ -42,7 +39,6 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// @desc    Login user
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -74,17 +70,6 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-
-// @desc    Logout user
-exports.logoutUser = (req, res) => {
-  res.cookie('jwt', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.status(200).json({ message: 'Logged out successfully' });
-};
-
-// @desc    Get current user profile
 exports.getUserProfile = (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authorized' });
@@ -101,7 +86,6 @@ exports.getUserProfile = (req, res) => {
   });
 };
 
-// @desc Upload profile image
 exports.uploadProfileImage = async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
@@ -117,4 +101,3 @@ exports.uploadProfileImage = async (req, res) => {
     res.status(500).json({ message: 'Image upload failed', error: error.message });
   }
 };
-

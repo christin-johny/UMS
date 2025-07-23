@@ -2,38 +2,6 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// GET /api/admin/users
-exports.getAllUsers = async (req, res) => {
-  const search = req.query.q || ''
-  const users = await User.find({
-    $or: [
-      { name: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-    ],
-  }).select('-password')
-  res.json(users)
-}
-
-// DELETE /api/admin/users/:id
-exports.deleteUser = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id)
-  res.json({ message: 'User deleted' })
-}
-
-// PUT /api/admin/users/:id
-exports.updateUser = async (req, res) => {
-  const user = await User.findById(req.params.id)
-  if (!user) return res.status(404).json({ message: 'User not found' })
-
-  user.name = req.body.name || user.name
-  user.email = req.body.email || user.email
-  user.isAdmin = req.body.isAdmin ?? user.isAdmin
-
-  const updated = await user.save()
-  res.json({ message: 'User updated', user: updated })
-}
-
-// POST /api/auth/admin-login
 exports.adminLogin = async (req, res) => {
   const { email, password } = req.body
  
@@ -69,6 +37,57 @@ exports.adminLogin = async (req, res) => {
     console.log(err)
     res.status(500).json({ message: 'Server error' })
   }
+}
+
+exports.getAllUsers = async (req, res) => {
+  const search = req.query.q || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit =5;
+  const skip = (page - 1) * limit;
+
+  const query = {
+    $or: [
+      { name: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+    ],
+  };
+
+  try {
+    const [users, total] = await Promise.all([
+      User.find(query).select('-password').skip(skip).limit(limit),
+      User.countDocuments(query),
+    ]);
+
+    res.json({
+      users,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
+};
+
+
+exports.deleteUser = async (req, res) => {
+  await User.findByIdAndDelete(req.params.id)
+  res.json({ message: 'User deleted' })
+}
+
+exports.updateUser = async (req, res) => {
+  const user = await User.findById(req.params.id)
+  if (!user) return res.status(404).json({ message: 'User not found' })
+    const existingUser = await User.findOne({email:user.email});
+    if(existingUser){
+      return res.status(400).json({message:'User already with this email alreadyexists !'})
+    }
+  user.name = req.body.name || user.name
+  user.email = req.body.email || user.email
+  user.isAdmin = req.body.isAdmin ?? user.isAdmin
+
+  const updated = await user.save()
+  res.json({ message: 'User updated', user: updated })
 }
 
 exports.addUser = async (req,res)=>{

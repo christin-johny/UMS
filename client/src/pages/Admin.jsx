@@ -10,21 +10,32 @@ const Admin = () => {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
   const [editingUser, setEditingUser] = useState(null)
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
   const dispatch =useDispatch()
 
   const fetchUsers = async () => {
-    try {
-      const res = await axios.get(`/api/admin/users?q=${search}`)
-      setUsers(res.data)
-    } catch (err) {
-      console.error('Failed to fetch users: ', err)
-    }
+  try {
+    const res = await axios.get(`/admin/users?q=${search}&page=${page}`);
+    setUsers(res.data.users);
+    setTotalPages(res.data.totalPages);
+  } catch (err) {
+    console.error('Failed to fetch users: ', err);
   }
+};
+
 
   useEffect(() => {
     fetchUsers()
-  }, [search])
+  }, [search, page])
+
+  useEffect(() => {
+   setPage(1);
+  }, [search]);
+
+
 
   const handleDelete = async (id) => {
   const result = await Swal.fire({
@@ -39,7 +50,7 @@ const Admin = () => {
 
   if (result.isConfirmed) {
     try {
-      await axios.delete(`/api/admin/users/${id}`)
+      await axios.delete(`/admin/users/${id}`)
       await fetchUsers()
       Swal.fire('Deleted!', 'The user has been deleted.', 'success')
     } catch (error) {
@@ -59,7 +70,7 @@ const Admin = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`/api/admin/users/${editingUser._id}`, {
+      await axios.put(`/admin/users/${editingUser._id}`, {
         name: editingUser.name,
         email: editingUser.email,
         isAdmin: editingUser.isAdmin,
@@ -69,7 +80,11 @@ const Admin = () => {
       Swal.fire('success','User updated successfully','success')
       fetchUsers()
     } catch (err) {
-      console.error('Update failed:', err)
+      Swal.fire(
+              "Error",
+              err.response?.data?.message || "User with this email already exists!",
+              "error"
+            );
     }
   }
 
@@ -139,7 +154,7 @@ const Admin = () => {
     </table>
   </div>
 
-  {/* Edit Modal */}
+
   {editingUser && (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg space-y-4">
@@ -187,6 +202,26 @@ const Admin = () => {
       </div>
     </div>
   )}
+  <div className="flex justify-center mt-4 gap-4">
+  <button
+    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+    disabled={page === 1}
+    className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded disabled:opacity-50"
+  >
+    Previous
+  </button>
+  <span className="px-4 py-2 text-gray-700">
+    Page {page} of {totalPages}
+  </span>
+  <button
+    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={page === totalPages}
+    className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
 </div>
 
   )

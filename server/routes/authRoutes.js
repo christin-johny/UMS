@@ -6,7 +6,6 @@ const upload = require('../middleware/uploadMiddleware');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/logout', logoutUser);
 router.get('/profile', protect, getUserProfile);
 router.post('/upload', protect, upload.single('image'), uploadProfileImage);
 

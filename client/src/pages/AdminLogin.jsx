@@ -31,7 +31,7 @@ const AdminLogin = () => {
     dispatch(loginStart());
     setServerError('');
     try {
-      const res = await axios.post('/api/admin/admin-login', { email, password });
+      const res = await axios.post('/admin/admin-login', { email, password });
       const { token, user } = res.data;
 
       if (!user.isAdmin) {

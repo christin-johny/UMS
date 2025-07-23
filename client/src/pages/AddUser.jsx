@@ -51,7 +51,7 @@ const AddUser = () => {
     }
 
     try {
-      await axios.post("/api/admin/users", formData);
+      await axios.post("/admin/users", formData);
       await Swal.fire("Success", "User created successfully", "success");
       navigate("/admin");
     } catch (err) {
@@ -65,7 +65,7 @@ const AddUser = () => {
 
   return (
     <div className="max-w-md mx-auto mt-16 bg-white p-8 shadow-xl rounded-2xl border border-gray-100 relative">
-      {/* Back Button */}
+      
       <button
         onClick={() => navigate("/admin")}
         className="absolute -top-4 -left-4 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-1 rounded-lg shadow text-sm"

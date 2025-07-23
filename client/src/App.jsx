@@ -21,7 +21,7 @@ const App = () => {
         <Route path='/register' element={<PublicRoute><Register/></PublicRoute> }/>
         <Route path='/login' element={<PublicRoute><Login/></PublicRoute> }/>
         <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute> }/>
-        <Route path ={'/admin'} element={<AdminRoute><Admin/></AdminRoute> }/>
+        <Route path ='/admin' element={<AdminRoute><Admin/></AdminRoute> }/>
         <Route path="/admin-login" element={<AdminPublicRoute><AdminLogin /></AdminPublicRoute> } />
         <Route path='/admin/add-user' element={<AdminRoute> <AddUser/> </AdminRoute> }/>
       </Routes>

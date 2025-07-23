@@ -5,7 +5,7 @@ import { baseURL } from "../Constants/Constants";
 const API = axios.create({
   baseURL: `${baseURL}`,
   withCredentials: true,
-})
+});
 
 API.interceptors.request.use((config) => {
   const state = store.getState()
@@ -14,6 +14,6 @@ API.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
-})
+});
 
 export default API

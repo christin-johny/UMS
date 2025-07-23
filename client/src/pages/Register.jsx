@@ -91,7 +91,7 @@ const Register = () => {
 
     dispatch(loginStart())
     try {
-      const res = await axios.post('/api/auth/register', formData)
+      const res = await axios.post('/auth/register', formData)
       dispatch(loginSuccess(res.data))
       await Swal.fire('success','user registeration successfully completed','success');
       navigate('/')

@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate()
   const { loading, error } = useSelector((state) => state.auth)
 
-  // Email validation function
+ 
   const checkEmail = (value) => {
     setEmail(value)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -35,7 +35,7 @@ const Login = () => {
 
     dispatch(loginStart())
     try {
-      const res = await axios.post('/api/auth/login', { email, password })
+      const res = await axios.post('/auth/login', { email, password })
       dispatch(loginSuccess(res.data))
       navigate('/')
     } catch (err) {
