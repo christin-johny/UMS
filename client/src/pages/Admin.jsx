@@ -141,12 +141,14 @@ const Admin = () => {
               >
                 Edit
               </button>
+            {!user.isAdmin && <>
+              
               <button
                 onClick={() => handleDelete(user._id)}
                 className="bg-red-600 hover:bg-red-700 text-white font-medium px-3 py-1 rounded"
               >
                 Delete
-              </button>
+              </button></>}
             </td>
           </tr>
         ))}

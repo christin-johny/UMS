@@ -42,7 +42,7 @@ exports.adminLogin = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   const search = req.query.q || '';
   const page = parseInt(req.query.page) || 1;
-  const limit =5;
+  const limit =3;
   const skip = (page - 1) * limit;
 
   const query = {
@@ -69,26 +69,32 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-
 exports.deleteUser = async (req, res) => {
   await User.findByIdAndDelete(req.params.id)
   res.json({ message: 'User deleted' })
 }
 
 exports.updateUser = async (req, res) => {
-  const user = await User.findById(req.params.id)
-  if (!user) return res.status(404).json({ message: 'User not found' })
-    const existingUser = await User.findOne({email:user.email});
-    if(existingUser){
-      return res.status(400).json({message:'User already with this email alreadyexists !'})
-    }
-  user.name = req.body.name || user.name
-  user.email = req.body.email || user.email
-  user.isAdmin = req.body.isAdmin ?? user.isAdmin
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(404).json({ message: 'User not found' });
 
-  const updated = await user.save()
-  res.json({ message: 'User updated', user: updated })
-}
+  if (req.body.email) {
+    const existingUser = await User.findOne({
+      email: req.body.email,
+      _id: { $ne: req.params.id },
+    });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User with this email already exists!' });
+    }
+  }
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  user.isAdmin = req.body.isAdmin ?? user.isAdmin;
+
+  const updated = await user.save();
+  res.json({ message: 'User updated', user: updated });
+};
+
 
 exports.addUser = async (req,res)=>{
   const {name,email,password,isAdmin} = req.body;

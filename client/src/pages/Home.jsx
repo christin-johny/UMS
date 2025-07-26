@@ -17,7 +17,7 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
      
-      <nav className="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+      <nav className="bg-blue-800 text-white p-4 shadow-md flex justify-between items-center">
         <h1 className="text-2xl font-bold">UMS</h1>
 
         <div className="space-x-4">
